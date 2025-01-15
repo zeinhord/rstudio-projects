@@ -1,0 +1,244 @@
+---
+title: "Board Games Geek Data"
+author: "Ivan Leonychev"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo=FALSE, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(stringr)
+
+```
+
+```{r data and cleaning, echo=FALSE, include=FALSE}
+board_games <- read.csv(file = "board_games.csv", header = TRUE)
+
+board_games <- board_games %>%
+  subset(year >= 1960) %>%
+  subset(min_players != 0) %>%
+  subset(max_players >= 2) %>%
+  subset(min_time != 0) %>%
+  subset(max_time != 0) %>%
+  subset(avg_time != 0)
+
+```
+
+\tableofcontents 
+
+\newpage
+# Hypothesis for the research and data overview
+
+The **target population** of the research are board games, published in a period from 1960 to 2018 and presented on the platfrom "BoardGamesGeek".
+
+Main hypothesis for the research are as follows:
+
+* The mean of average rating is greater than the mean of the geek rating.
+* There is a clead dependency betwenn average rating value and number of votes.
+
+Sources for the data are BoardGamesGeek (after - BGG) online platform and "kaagle" [https://boardgamegeek.com/, https://www.kaggle.com/datasets/andrewmvd/board-games]. We will use **glimpse** function to get overview over variables in datasets: their data types and values. 
+
+```{r overview, echo=FALSE}
+glimpse(board_games)
+
+```
+
+The dataset comprises data on board games from the BoardGamesGeek online platform on board games published from 1960 to 2018. The variables in the dataset as follows:
+
+* rank - rank of the game on BGG
+* game_id - ID of the game on BGG
+* names - name/title of the game
+* min_players - minimum recommended amount of players for a board game
+* max_players - maximum recommended amount of players for a board game
+* avg_time - average time spent on a session of the game
+* min_time - minumim time needed to play a session of the game
+* max_time - maximum time spent on a session of the game
+* year - year the game was published
+* avg_rating - pure mean rating of the games according to the users voting
+* geek_rating - rating of the games made by BGG and used for assigning ranks, weights the number of votes in addition to just mean rating
+* num_votes - number of votes on a game's rating
+* age - age restriction for a game
+* mechanic - a list of mechanics, used in a particular game
+* owned - number of users of BGG, who states thet they own a game
+* category - game's categories (which genres elements it contains)
+
+# Visualizations
+
+## Ditribution of board games over years
+
+```{r year, echo=FALSE}
+hist(board_games$year, main = "Histogram of board games published per year",
+     xlab = "Year")
+
+```
+
+As the histogram displays, the number of games published every year is constantly increasing and, possibly, we continue to rise in future. 2016 was a year with the highest amount of board games published over the exact period.
+
+## Players number
+
+```{r players, echo=FALSE}
+summary(board_games$min_players)
+
+summary(board_games$max_players)
+
+boxplot(board_games$min_players, board_games$max_players, 
+        main = "Comparative Boxplot of Mimimun and Maximum number of players", 
+        ylab = "Number of players", ylim = c(1, 15))
+
+```
+
+As we can see from the visualization above, the most common number of "minimum" players is 2 and "maximum" is 4, though 6 is also common. According to this we can make a conclusion that the main range of min-max number of players is 2-6.
+
+## Playing time
+
+```{r time, echo=FALSE}
+board_games_time <- board_games %>%
+  gather(key = "Time type", value = "Time", avg_time, min_time, max_time)
+
+summary(board_games$avg_time)
+
+summary(board_games$min_time)
+
+summary(board_games$max_time)
+
+boxplot(board_games_time$Time ~ board_games_time$`Time type`,
+        main = "Boxplot of time played", xlab = "Variable type", 
+        ylab = "Time (in minutes)",
+        ylim = c(0, 300))
+
+```
+
+As we can see from the comparative boxplot, the range of values for "max" and "avg" time played is almost identical, which bring us to the conclusion the the absolute majority of the players prefers to play board games as much time as possible.
+
+## Rating and votes analysis
+
+```{r top games, echo=FALSE}
+board_games_rating <- board_games %>%
+  select(geek_rating, avg_rating, names, rank) %>%
+  arrange(rank) %>%
+  head(20) %>%
+  gather(key = "rating", value = "score", avg_rating, geek_rating)
+
+ggplot(data = board_games_rating, 
+       aes(x = names, y = score, group = rating, color =rating)) +
+  geom_line() +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  labs(title="TO-20 Popular Games Ratings", x = "Games", y = "Rating Scores")
+
+```
+
+The scatterplot above demonstrates both ratings value of TOP-20 the most popular games on the BGG. We can clearly observe that the average rating tends to always be higher than the geek rating, which comes from the difference in rating calculations formula: geek rating also weights number of votes, not only the mean rating value.
+
+```{r votes, echo=FALSE}
+ggplot(data = board_games, aes(num_votes, avg_rating)) +
+  geom_point(col="darkgreen") +
+  labs(title = "Votes vs Rating", x = "Number of votes",
+       y = "Average rating")
+
+```
+
+The scatterplot of "Votes vs Rating" demonstrates that with the increase in number of votes the average rating tends to more "average" values, while having a small amount of votes gives game higher chances to have either high or low rating.
+
+## Age restriction
+
+```{r age, echo=FALSE}
+board_games %>%
+  ggplot(aes(x=age)) +
+  geom_histogram(aes(y = after_stat(density)), fill = "black", bins = 30) +
+  geom_density(col="red") +
+  labs(title = "Distribution of Age restriction", x = "Age", y = "Density")
+
+```
+
+The histogram of "Age restriction" demonstrates that the main range for age restriction for board games is located between 8 and 14, with fewer values over 14 and under 8.
+
+# Game mechanics
+
+```{r mechanics, echo=FALSE}
+mechanics <- as.data.frame(table(str_trim(unlist(strsplit
+         (str_trim(as.character(board_games$mechanic)), ", "))))) %>% 
+  rename(Mechanic = Var1) %>%
+  rename(Count = Freq) %>%
+  arrange(-Count)
+
+mechanics[1:10,]
+
+```
+
+According to to the table of popular mechanincs, the two most popular mechanics are "Hand management" and "Dice Rolling" as their exist in 1333 and 1328 board games respectively out of 4733 board games from the dataset. The next popular mechanics are "Variable Player Powers", "Set Collections" and "Area Control / Area Influence".
+
+# Testing
+
+## Hypothesis testing
+
+Null hypothesis: average rating mean is **greater** than geek rating mean.
+Alternative hypothesis: average rating mean is *less** than geek rating mean.
+
+```{r two sample test, echo=FALSE}
+t.test(board_games$avg_rating, board_games$geek_rating, alternative = "less",
+       conf.level = 0.95)
+
+t.test(board_games$avg_rating, board_games$geek_rating, alternative = "less",
+       conf.level = 0.95, paired = TRUE)
+
+```
+
+**Fail to reject** the null hypothesis: mean value of average rating is **greater** than mean value of geek rating.
+
+## Independece testing
+
+```{r chsq1, echo=FALSE}
+chisq.test(board_games$rank, board_games$avg_time)
+
+```
+
+**Fail to reject** the null hypothesis of independence: the game rank is independent of the average time played.
+
+```{r chsq2, echo=FALSE}
+chisq.test(board_games$avg_rating, board_games$num_votes)
+
+```
+
+**Reject** the null hypothesis of independence: the average rating is dependent on number of votes.
+
+## Normality testing
+
+```{r qqplots, echo=FALSE}
+qqnorm(board_games$num_votes, main = "Normal Q-Q Plot: Number of votes")
+qqline(board_games$num_votes, lwd = 2, col = "red")
+
+qqnorm(board_games$geek_rating, main = "Normal Q-Q Plot: Average rating")
+qqline(board_games$geek_rating, lwd = 2, col = "red")
+
+qqnorm(board_games$avg_rating, main = "Normal Q-Q Plot: Geek rating")
+qqline(board_games$avg_rating, lwd = 2, col = "red")
+
+```
+
+Q-Q plots made for variables "num_votes", "avg_rating" and "geek rating" suggest that the mojarity of the data doesn't follow a normal distribution, while "geek rating" data tends to be close to normally distributed.
+
+# Conlusion
+
+In conclusion, we can state the following:
+
+* The number of board games published every year rose over the period.
+* Average time spent on every board game session is mostly identical to the maximum time spent on it.
+* Average rating tends to be always higher than the geek rating.
+* With the increase in the number of votes average rating tends to “average” values.
+* Two most popular mechanics are dice rolling and hand management.
+
+Both hypothesis for the research as states in the chapter "Hypothesis for the research and data overview" were found to be **TRUE**.
+
+\newpage
+# Appendix
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```
