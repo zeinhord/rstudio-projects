@@ -8,4 +8,4 @@ This project was created as part of my "Data Visualizations" course, aimed at sh
 - Software: RStudio
 - Language: R
 
-Data is extracted from [Kaggle](https://www.kaggle.com/datasets/mylesoneill/game-of-thrones), saved locally and divided into two datasets for learning objectives.
+Data is extracted from [Kaggle](https://www.kaggle.com/datasets/mylesoneill/game-of-thrones), saved locally and divided into two datasets for learning objectives (accessed last time in December 2023).
