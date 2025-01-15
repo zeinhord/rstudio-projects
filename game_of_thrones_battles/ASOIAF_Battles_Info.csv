@@ -1,0 +1,38 @@
+battle_name,attacker_house,defender_house,attacker_outcome,battle_type,attacker_size,defender_size,attacker_commander,defender_commander,location,region
+Battle of the Golden Tooth,Lannister,Tully,win,pitched battle,15000,4000,Jaime Lannister,"Clement Piper, Vance",Golden Tooth,The Westerlands
+Battle at the Mummer's Ford,Lannister,Baratheon,win,ambush,,120,Gregor Clegane,Beric Dondarrion,Mummer's Ford,The Riverlands
+Battle of Riverrun,Lannister,Tully,win,pitched battle,15000,10000,"Jaime Lannister, Andros Brax","Edmure Tully, Tytos Blackwood",Riverrun,The Riverlands
+Battle of the Green Fork,Stark,Lannister,loss,pitched battle,18000,20000,"Roose Bolton, Wylis Manderly, Medger Cerwyn, Harrion Karstark, Halys Hornwood","Tywin Lannister, Gregor Clegane, Kevan Lannister, Addam Marbrand",Green Fork,The Riverlands
+Battle of the Whispering Wood,Stark,Lannister,win,ambush,1875,6000,"Robb Stark, Brynden Tully",Jaime Lannister,Whispering Wood,The Riverlands
+Battle of the Camps,Stark,Lannister,win,ambush,6000,12625,"Robb Stark, Tytos Blackwood, Brynden Tully","Lord Andros Brax, Forley Prester",Riverrun,The Riverlands
+Sack of Darry,Lannister,Darry,win,pitched battle,,,Gregor Clegane,Lyman Darry,Darry,The Riverlands
+Battle of Moat Cailin,Greyjoy,Stark,win,pitched battle,,,Victarion Greyjoy,,Moat Cailin,The North
+Battle of Deepwood Motte,Greyjoy,Stark,win,siege,1000,,Asha Greyjoy,,Deepwood Motte,The North
+Battle of the Stony Shore,Greyjoy,Stark,win,ambush,264,,Theon Greyjoy,,Stony Shore,The North
+Battle of Torrhen's Square,Stark,Greyjoy,win,pitched battle,244,900,"Rodrik Cassel, Cley Cerwyn",Dagmer Cleftjaw,Torrhen's Square,The North
+Battle of Winterfell,Greyjoy,Stark,win,ambush,20,,Theon Greyjoy,Bran Stark,Winterfell,The North
+Sack of Torrhen's Square,Greyjoy,Stark,win,siege,,,Dagmer Cleftjaw,,Torrhen's Square,The North
+Sack of Winterfell,Bolton,Stark,win,ambush,618,2000,"Ramsay Snow, Theon Greyjoy ","Rodrik Cassel, Cley Cerwyn, Leobald Tallhart",Winterfell,The North
+Battle of Oxcross,Stark,Lannister,win,ambush,6000,10000,"Robb Stark, Brynden Tully","Stafford Lannister, Roland Crakehall, Antario Jast",Oxcross,The Westerlands
+Siege of Storm's End,Baratheon of Dragonstone,Baratheon of Storm's End,win,siege,5000,20000,"Stannis Baratheon, Davos Seaworth","Renly Baratheon, Cortnay Penrose, Loras Tyrell, Randyll Tarly, Mathis Rowan",Storm's End,The Stormlands
+Battle of the Fords,Lannister,Tully,loss,pitched battle,20000,10000,"Tywin Lannister, Flement Brax, Gregor Clegane, Addam Marbrand, Lyle Crakehall, Leo Lefford","Edmure Tully, Jason Mallister, Karyl Vance",Red Fork,The Riverlands
+Sack of Harrenhal,Stark,Lannister,win,ambush,100,100,"Roose Bolton, Vargo Hoat, Robett Glover",Amory Lorch,Harrenhal,The Riverlands
+Battle of the Crag,Stark,Lannister,win,ambush,6000,,"Robb Stark, Smalljon Umber, Black Walder Frey",Rolph Spicer,Crag,The Westerlands
+Battle of the Blackwater,Baratheon of Dragonstone,Baratheon of King's Landing,loss,pitched battle,21000,7250,"Stannis Baratheon, Imry Florent, Guyard Morrigen, Rolland Storm, Salladhor Saan, Davos Seaworth","Tyrion Lannister, Jacelyn Bywater, Sandor Clegane, Tywin Lannister, Garlan Tyrell, Mace Tyrell, Randyll Tarly",King's Landing,The Crownlands
+Siege of Darry,Darry,Lannister,win,siege,,,Helman Tallhart,,Darry,The Riverlands
+Battle of Duskendale,Stark,Lannister,loss,pitched battle,3000,,"Robertt Glover, Helman Tallhart","Randyll Tarly, Gregor Clegane",Duskendale,The Crownlands
+Battle of the Burning Septry,Brotherhood,Brave Companions,win,pitched battle,,,,,Unnamed septry,The Riverlands
+Battle of the Ruby Ford,Lannister,Stark,win,pitched battle,,6000,Gregor Clegane,"Roose Bolton, Wylis Manderly",Ruby Ford,The Riverlands
+Retaking of Harrenhal,Lannister,Brave Companions,win,pitched battle,,,Gregor Clegane,Vargo Hoat,Harrenhal,The Riverlands
+The Red Wedding,Frey,Stark,win,ambush,3500,3500,"Walder Frey, Roose Bolton, Walder Rivers",Robb Stark,The Twins,The Riverlands
+Siege of Seagard,Frey,Mallister,win,siege,,,Walder Frey,Jason Mallister,Seagard,The Riverlands
+Battle of Castle Black,Free folk,Night's Watch,loss,siege,100000,1240,"Mance Rayder, Tormund Giantsbane, Harma Dogshead, Magnar Styr, Varamyr","Stannis Baratheon, Jon Snow, Donal Noye, Cotter Pyke",Castle Black,Beyond the Wall
+Fall of Moat Cailin,Bolton,Greyjoy,win,siege,,,Ramsey Bolton,,Moat Cailin,The North
+Sack of Saltpans,Brave Companions,Cox,win,razing,,,Rorge,,Saltpans,The Riverlands
+Retaking of Deepwood Motte,Baratheon of Dragonstone,Greyjoy,win,pitched battle,4500,200,"Stannis Baratheon, Alysane Mormot",Asha Greyjoy,Deepwood Motte,The North
+Battle of the Shield Islands,Greyjoy,Tyrell,win,pitched battle,,,"Euron Greyjoy, Victarion Greyjoy",,Shield Islands,The Reach
+Invasion of Arbor,Greyjoy,Tyrell,win,razing,,,"Euron Greyjoy, Victarion Greyjoy",,"Ryamsport, Vinetown, Starfish Harbor",The Reach
+Second Siege of Storm's End,Tyrell,Baratheon of Dragonstone,win,siege,,200,"Mace Tyrell, Mathis Rowan",Gilbert Farring,Storm's End,The Stormlands
+Siege of Dragonstone,Baratheon of King's Landing,Baratheon of Dragonstone,win,siege,2000,,"Loras Tyrell, Raxter Redwyne",Rolland Storm,Dragonstone,The Stormlands
+Siege of Riverrun,Lannister,Tully,win,siege,3000,,"Daven Lannister, Ryman Fey, Jaime Lannister",Brynden Tully,Riverrun,The Riverlands
+Siege of Raventree,Bracken,Blackwood,win,siege,1500,,"Jonos Bracken, Jaime Lannister",Tytos Blackwood,Raventree,The Riverlands
