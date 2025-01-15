@@ -1,0 +1,317 @@
+---
+title: "Battles of the Song of Ice and Fire"
+author: "Ivan Leonychev"
+date: "`r Sys.Date()`"
+output: pdf_document
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, include=FALSE}
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(brew)
+```
+
+\tableofcontents 
+
+\newpage
+# Objectives of the analysis and data overview
+
+Objectives of analysis are as follows:
+
+* Which sides of the conflict did fight the most number of battles?
+* Which houses commanded the most number of battles?
+* What is their win/lose ratio?
+* Where the most of the battles took place?
+
+The sources for the data are fandom Wiki of Ice and Fire (based on book series) and relevant data from “kaggle” [https://awoiaf.westeros.org/, https://www.kaggle.com/datasets/mylesoneill/game-of-thrones]. We will use **glimpse** function to get overview over variables in datasets: their data types and values.
+
+```{r, echo=FALSE, fig.width=6, fig.height=4}
+
+Battles <- read.csv(file = "ASOIAF_Battles.csv", header = TRUE)
+Battles_info <- read.csv(file = "ASOIAF_Battles_Info.csv", header = TRUE)
+
+
+glimpse(Battles)
+```
+
+The first dataset contains very general information about battles: their names, year, and allegiance of both sides (attacker and defender). The variables in the dataset as follows:
+
+* battle_name - a name of the battle as it mentioned in the book
+* year - a year when the battle happened according to the book's timeline
+* attacker_allegiance - a name of the king, to who the main attacking noble house pledges it's loyalty at the time the battle happens
+* defender_allegiance - a name of the king, to who the main defending noble house pledges it's loyalty at the time the battle happens
+
+```{r, echo=FALSE, fig.width=6, fig.height=4}
+
+glimpse(Battles_info)
+
+```
+
+The second dataset contains more detailed information about battles: commanding houses, location and region, commanders, forces, outcome, etc. The variables in the dataset as follows:
+
+* battle_name - a name of the battle as it mentioned in the book
+* attacker_house - main commanding noble house (or organization) of the attacking side
+* defender_house - main commanding noble house (or organization) of the defending side
+* attacker_outcome - outcome of the battle in the attacker's perspective (either "win" or "loss")
+* battle_type - type of the battle (siege, ambush, pitched battle, razing)
+* attacker_size - number of soldiers deployed by the attacker
+* defender_size - number of soldiers deployed by the defender
+* attacker_commander - person(s) in command of the attacker's forces
+* defender_commander - person(s) in command of the defender's forces
+* location - location of the battle (named after the nearest settlement)
+* region - a region where battle happened
+
+# Battles
+
+## Distribution of battles over years
+
+```{r, echo=FALSE}
+
+ggplot(data = Battles, aes(year)) +
+  geom_bar(fill = "darkgreen") +
+  labs(title = "Barplot of Battles per year",
+       x = "Year (AC)",
+       y = "Count")
+
+ggplot(data = Battles, aes(year, battle_name)) +
+  geom_point() +
+  labs(title = "Scatterplot of Battles per year with Names",
+       x = "Year (AC)",
+       y = "Battle Name")
+
+```
+
+According to the graphs above, most of the battles happened in 299 AC, during the most intense phase of the War of the Five Kings. But some major battles also happened in 298 AC and 300 AC.
+
+## Battle type
+
+```{r, echo=FALSE}
+
+for (col in names(Battles_info)) {
+  if(is.numeric(Battles_info[[col]])) {
+    Battles_info[[col]] <- Battles_info[[col]]/1000
+  }
+}
+
+Battles_full <- left_join(Battles, Battles_info, by = "battle_name")
+
+Type <- Battles_full %>%
+  group_by(battle_type) %>%
+  count() %>%
+  ungroup() %>%
+  mutate(perc = n / sum(n)) %>%
+  arrange(perc) %>%
+  mutate(labels = scales::percent(perc))
+
+ggplot(data = Type, aes(x = "", y = perc, fill = battle_type)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_text(aes(label = labels),
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank(),
+        axis.title.y = element_blank()) +
+  guides(fill = guide_legend(title = "Battle type")) +
+  labs(title = "Pie chart of battle type")
+
+```
+
+As we can see from the pie chart above, most of the battles (37.8%) was open field battles, or "pitched" battles. Ambushes and sieges are almost equal with a slight more sieges with 27% and 29.7% respectively. Razing take the least part in the total number of battles with only 5.4%
+
+## Battles by region
+
+```{r, echo=FALSE}
+
+ggplot(data = Battles_full, aes(region, fill = region)) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Dark2") +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank()) +
+  guides(fill = guide_legend(title = "Region")) +
+  labs(title = "Barplot of battles by region",
+       y = "Count")
+
+ggplot(data = Battles_full, aes(battle_name, location, color = region)) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(), axis.title.y = element_blank()) +
+  guides(fill = guide_legend(title = "Region")) +
+  labs(title = "Scatterplot of Battles' location by Region")
+
+```
+
+The "Barplot of battles by region" clearly demonstrates that the absolute majority of the battles happened in only two regions: the Riverlands and the North. On the "Scatterplot of Battle's location by Regions" we can see and exact location of every battle happened during the War of the Five Kings.
+
+# Allegiance and Houses
+
+## Allegiance
+
+```{r, echo=FALSE}
+
+ggplot(data = Battles, aes(attacker_allegiance, group = year, fill = year)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5)) +
+  scale_fill_gradient(low = "pink", high="red") +
+  labs(title = "Barplot of Battles by Attacker Allegiance per year",
+       x = "Attacker Allegiance",
+       y = "Count")
+
+ggplot(data = Battles, aes(defender_allegiance, group = year, fill = year)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5)) +
+  scale_fill_gradient(low = "lightblue", high="darkblue") +
+  labs(title = "Barplot of Battles by Defender Allegiance per year",
+       x = "Defender Allegiance",
+       y = "Count")
+
+```
+
+Two barplots above demonstrate the allegiance of all attackers and defenders through the years. Accrdfing to the, the tho most powerfull and active forces were those pledged loyalty to kings Joffrey/Tommen Baratheon (royal succession happened during the war) and Robb Stark. The main "attacker" were forces of Joffrey/Tommen Baratheon (most battles as an attacker), and the main defender were forces of Robb Stark (most battles as a defender).
+
+## Houses
+
+```{r, echo=FALSE}
+
+Houses_united <- Battles_info %>%
+  unite(houses, attacker_house, defender_house, sep = ", ") %>%
+  select(houses)
+
+Houses <- as.data.frame(table(str_trim(unlist(strsplit
+         (str_trim(as.character(Houses_united$houses)), ", "))))) %>%
+  rename(houses = Var1) %>%
+  rename(battles_number = Freq) %>%
+  arrange(-battles_number)
+
+Houses[1:5,]
+
+```
+
+The table above demonstrates the TOP-5 houses by number of battles they led during the war. The most active were houses of Lannister and Stark, then goes house Greyjoy and the top ended with houses of Baratheon of Dragonstone (main house Baratheon was divided and it's different parts were on the opposite sides) and Tully.
+
+```{r, echo=FALSE}
+
+ggplot(data = Houses, aes(houses, battles_number)) +
+  geom_point(color = "red") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  labs(title = "Scatterplot of battles of each House",
+       x = "House name",
+       y = "Number of Battles")
+
+```
+
+The graph above shows a number of battles for each of the houses(or organizations), which were the main participant in at least one battle on either side.
+
+```{r, echo=FALSE}
+
+house_battles <- function(name){
+  if(any(Battles_full == name)) {
+    num <- Battles_full %>%
+      filter_all(any_vars(. %in% c(name))) %>%
+      nrow()
+    off <- Battles_full %>%
+      filter(attacker_house == name) %>%
+      nrow()
+    def <- Battles_full %>%
+      filter(defender_house == name) %>%
+      nrow()
+    ratio <- (sum(Battles_full %>% filter(attacker_house == name) %>% 
+                    filter(attacker_outcome == "win") %>% nrow(),
+                Battles_full %>% filter(defender_house == name) %>% 
+                  filter(attacker_outcome == "loss") %>% nrow())/num)*100
+    result <- paste("The house of", name, "fought", num, "battles:", 
+                    off, "on the offensive side and", 
+                    def, "on the defensive side, it's win/lose ratio is", ratio,"%")
+  } else {
+    result <- paste("Such house didn't command any battle, 
+                    please choose another one.")
+  }
+  return(result)
+}
+
+```
+
+Below are more detailed statistics for each house from the TOP-5 on their involvement in the War of the Five Kings:
+
+```{r, echo=FALSE, results='asis'}
+
+house_battles('Lannister')
+
+house_battles('Stark')
+
+house_battles('Greyjoy')
+
+house_battles('Baratheon of Dragonstone')
+              
+house_battles('Tully')
+
+```
+
+\newpage
+# Outcome and forces
+
+## Attacker's outcome
+
+```{r, echo=FALSE}
+
+outcome <- Battles_full %>%
+  group_by(attacker_outcome) %>%
+  count() %>%
+  ungroup() %>%
+  mutate(perc = n / sum(n)) %>%
+  arrange(perc) %>%
+  mutate(labels = scales::percent(perc))
+
+ggplot(data = outcome, aes(x = "", y = perc, fill = attacker_outcome)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Dark2") +
+  geom_text(aes(label = labels),
+            position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y") +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
+  guides(fill = guide_legend(title = "Outcome")) +
+  labs(title = "Pie chart of attacker outcome")
+
+```
+
+From the pie chart above we can make a conclusion, that an absolute majority of the battles was won by the attacking side, no matter what particular alliance it was.
+
+```{r, echo=FALSE}
+
+avrg_forces <- function(name){
+    att <- round(mean(as.numeric(na.omit(
+      Battles_full$attacker_size[Battles_full$attacker_house == name]))), 2)
+    def <- round(mean(as.numeric(na.omit(
+      Battles_full$defender_size[Battles_full$defender_house == name]))), 2)
+    result <- paste("The average forces at disposal of House", 
+                    name, "in offensive battle is", 
+                    att, "thousands of soldiers and", 
+                    def, "thousands of soldiers in defensive battle.")
+    return(result)
+}
+
+```
+
+## Forces of the main houses
+
+Below some detailed statistics on average forces in the disposal of houses Lannister and Stark in both defensive and offensive battles:
+
+```{r, echo=FALSE, results='asis'}
+
+avrg_forces("Lannister")
+
+avrg_forces('Stark')
+
+```
+
+# Appendix
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```
